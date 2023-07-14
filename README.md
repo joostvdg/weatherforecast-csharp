@@ -9,6 +9,10 @@ The starting source for this sample was created using:
 $ dotnet new webapi --framework net6.0 --language C#
 ```
 
+## Test
+
+1
+
 ## Nuget from Nexus
 
 * https://help.sonatype.com/repomanager2/.net-package-repositories-with-nuget
