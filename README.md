@@ -11,7 +11,7 @@ $ dotnet new webapi --framework net6.0 --language C#
 
 ## Test
 
-8
+9
 
 ## Nuget from Nexus
 
@@ -129,3 +129,30 @@ tanzu apps workload get weatherforecast-csharp
 To access the deployed app use the URL shown under "Workload Knative Services" and append the endpoint `/weatherforecast` to that URL.
 
 This depends on the TAP installation having DNS configured for the Knative ingress.
+
+## Pipeline With TAP
+
+* Build & Test C# in Tekton Pipeline/Task
+* Generate Git Tag
+* Build image with Buildpacks using said image
+
+## Database via ResourceClaim on existing DB via Secret
+
+* 
+
+## Application Configuration Service
+
+* Run Application in two TAP environments
+* Retrieve config for specific environment
+* 
+
+## Blue - Green Deployment
+
+* Run in two TAP environments
+* Able to fail over
+* shared database?
+* ?
+
+## Test Containers via VM
+
+* https://apps-cloudmgmt.techzone.vmware.com/resource/running-testcontainers-tanzu-application-platform#sec38999-sub10
