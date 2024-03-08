@@ -11,7 +11,7 @@ $ dotnet new webapi --framework net6.0 --language C#
 
 ## Test
 
-22
+23
 
 ## Nuget from Nexus
 
