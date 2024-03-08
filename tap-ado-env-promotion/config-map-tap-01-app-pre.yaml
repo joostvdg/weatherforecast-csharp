@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: weatherforecast-csharp
+data:
+  schema.yml: |
+    #@data/values-schema
+    ---
+    environment: Production
+
+    #@schema/default ["weatherforecast-csharp/weatherforecast-csharp_pre.properties"]
+    configFiles:
+    - ""
+  overlay.yml: |
+    #@ load("@ytt:overlay", "overlay")
+    #@ load("@ytt:data", "data")
+    #@overlay/match by=overlay.subset({"kind":"Service"}),expects="1+"
+    ---
+    spec:
+      template:
+        spec:
+          containers:
+          #@overlay/match by=overlay.subset({"name": "workload"}), expects="1+"
+          -
+            env:
+              #@overlay/match by=overlay.subset({"name": "ASPNETCORE_ENVIRONMENT"}), expects="1+"
+              - name: ASPNETCORE_ENVIRONMENT
+                value: #@ data.values.environment
+
+    ---
+    apiVersion: config.apps.tanzu.vmware.com/v1alpha4
+    kind: ConfigurationSlice
+    metadata:
+      name: weatherforecast-csharp-config-slice
+    spec:
+      configurationSource: weatherforecast-csharp-config-source
+      plainTextContent: #@ data.values.configFiles

@@ -1,0 +1,26 @@
+apiVersion: carto.run/v1alpha1
+kind: Workload
+metadata:
+  name: weatherforecast-csharp
+  labels:
+    apps.tanzu.vmware.com/workload-type: ado
+    apps.tanzu.vmware.com/has-tests: "true"
+    apps.tanzu.vmware.com/has-tests-needs-workspace: "true"
+    app.kubernetes.io/part-of: weatherforecast-csharp
+spec:
+  env:
+    - name: ASPNETCORE_ENVIRONMENT
+      value: Development
+    - name: ASPNETCORE_APPLICATIONNAME
+      value: weatherforecast-csharp
+  params:
+  - name: gitops_ssh_secret
+    value: azure-devops
+  - name: annotations
+    value:
+      autoscaling.knative.dev/minScale: "1"
+  source:
+    git:
+      url: https://joostvandergriendt@dev.azure.com/joostvandergriendt/weatherforecast-csharp/_git/weatherforecast-csharp
+      ref:
+        branch: main

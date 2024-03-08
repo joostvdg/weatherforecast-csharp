@@ -1,0 +1,28 @@
+apiVersion: carto.run/v1alpha1
+kind: Deliverable
+metadata:
+  name: weatherforecast-csharp
+  labels:
+    app.kubernetes.io/part-of: weatherforecast-csharp
+    apps.tanzu.vmware.com/has-tests: "true"
+    apps.tanzu.vmware.com/has-tests-needs-workspace: "true"
+    apps.tanzu.vmware.com/workload-type: ado
+    app.kubernetes.io/component: deliverable
+    app.tanzu.vmware.com/deliverable-type: ado
+    carto.run/cluster-template-name: external-deliverable-template
+    carto.run/resource-name: deliverable
+    carto.run/supply-chain-name: source-test-scan-to-url-2
+    carto.run/template-kind: ClusterTemplate
+    carto.run/template-lifecycle: mutable
+    carto.run/workload-name: weatherforecast-csharp
+    carto.run/workload-namespace: dot
+spec:
+  params:
+  - name: gitops_ssh_secret
+    value: azure-devops
+  source:
+    git:
+      url: https://dev.azure.com/joostvandergriendt/my-first-repo/_git/my-first-repo
+      ref:
+        branch: main
+    subPath: config/test/weatherforecast-csharp

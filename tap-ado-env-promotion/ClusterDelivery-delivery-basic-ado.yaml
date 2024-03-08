@@ -1,0 +1,27 @@
+apiVersion: carto.run/v1alpha1
+kind: ClusterDelivery
+metadata:
+  name: delivery-basic-ado
+spec:
+  resources:
+  - name: source-provider
+    params:
+    - default: default
+      name: serviceAccount
+    - default: go-git
+      name: gitImplementation
+    templateRef:
+      kind: ClusterSourceTemplate
+      name: delivery-source-template
+  - deployment:
+      resource: source-provider
+    name: deployer
+    params:
+    - default: default
+      name: serviceAccount
+    templateRef:
+      kind: ClusterDeploymentTemplate
+      name: app-deploy-ado
+  selector:
+    app.tanzu.vmware.com/deliverable-type: ado
+

@@ -1,0 +1,80 @@
+apiVersion: carto.run/v1alpha1
+kind: ClusterTemplate
+metadata:
+  name: config-writer-and-pull-requester-template-2
+spec:
+  lifecycle: tekton
+  params:
+    - name: env
+      default: dev
+  ytt: |
+    #@ load("@ytt:data", "data")
+    #@ load("@ytt:json", "json")
+    #@ load("@ytt:base64", "base64")
+
+    #@ def merge_labels(fixed_values):
+    #@   labels = {}
+    #@   if hasattr(data.values.workload.metadata, "labels"):
+    #@     exclusions = ["kapp.k14s.io/app", "kapp.k14s.io/association"]
+    #@     for k,v in dict(data.values.workload.metadata.labels).items():
+    #@       if k not in exclusions:
+    #@         labels[k] = v
+    #@       end
+    #@     end
+    #@   end
+    #@   labels.update(fixed_values)
+    #@   return labels
+    #@ end
+
+    ---
+    apiVersion: tekton.dev/v1beta1
+    kind: TaskRun
+    metadata:
+      generateName: #@ data.values.workload.metadata.name + "-config-writer-pull-requester" + "-" + data.values.params.env + "-"
+      labels: #@ merge_labels({ "app.kubernetes.io/component": "config-writer-pull-requester" })
+    spec:
+      serviceAccountName: #@ data.values.params.serviceAccount
+      taskRef:
+        resolver: cluster
+        params:
+          - name: kind
+            value: task
+          - name: namespace
+            value: tap-tasks
+          - name: name
+            value: commit-and-pr-2
+      workspaces:
+        - name: ws
+          emptyDir: { }
+      params:
+        - name: git_server_kind
+          value: #@ data.values.params.gitops_server_kind
+        - name: gitops_server_host
+          value: #@ data.values.params.gitops_server_host
+        - name: git_server_address
+          value: #@ data.values.params.gitops_server_address
+        - name: repository_owner
+          value: #@ data.values.params.gitops_repository_owner
+        - name: repository_name
+          value: #@ data.values.params.gitops_repository_name
+        - name: commit_branch
+          value: #@ data.values.params.gitops_commit_branch
+        - name: pull_request_title
+          value: #@ data.values.params.gitops_pull_request_title
+        - name: pull_request_body
+          value: #@ data.values.params.gitops_pull_request_body
+        - name: base_branch
+          value: #@ data.values.params.gitops_branch
+        - name: git_user_name
+          value: #@ data.values.params.gitops_user_name
+        - name: git_user_email
+          value: #@ data.values.params.gitops_user_email
+        - name: git_commit_message
+          value: #@ data.values.params.gitops_commit_message
+        - name: git_files
+          value: #@ base64.encode(json.encode(data.values.config))
+        - name: sub_path
+          value: #@ "config/" + data.values.params.env + "/" + data.values.workload.metadata.name
+        - name: ca_cert_data
+          value: #@ data.values.params.ca_cert_data
+    
